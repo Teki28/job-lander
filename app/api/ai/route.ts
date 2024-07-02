@@ -5,12 +5,10 @@ export async function GET(req: Request) {
   // const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
   const headersList = headers()
   const ip = headersList.get('request-ip')
-  const geo = headersList.get('request-geo') 
-  console.log("ip: " + ip)
-  console.log("geo:" + geo)
-  req.headers.forEach(header => {
-    console.log(header)
-  })
+  console.log(req.headers.entries().next);
+  for (const element of req.headers.entries()) {
+    console.log(element);
+  }
 
   const limit = 3; // Limiting requests to 5 per minute per IP
   const windowMs = 60 * 1000; // 1 minute
