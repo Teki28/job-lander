@@ -6,10 +6,8 @@ export async function GET(req: Request) {
   const headersList = headers()
   const ip = headersList.get('request-ip')
   console.log(req.headers.entries().next);
-  for (const element of req.headers.entries()) {
-    console.log(element);
-  }
-
+  const map = new Map(req.headers.entries())
+  console.log(map);
   const limit = 3; // Limiting requests to 5 per minute per IP
   const windowMs = 60 * 1000; // 1 minute
   
