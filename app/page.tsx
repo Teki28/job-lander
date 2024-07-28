@@ -1,36 +1,14 @@
-import Pricing from '@/components/ui/Pricing/Pricing';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from "@/utils/supabase/server";
+import TestComp from "@/components/TestComp";
 
-export default async function PricingPage() {
+export default async () => {
   const supabase = createClient();
 
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-
-  const { data: subscription, error } = await supabase
-    .from('subscriptions')
-    .select('*, prices(*, products(*))')
-    .in('status', ['trialing', 'active'])
-    .maybeSingle();
-
-  if (error) {
-    console.log(error);
-  }
-
-  const { data: products } = await supabase
-    .from('products')
-    .select('*, prices(*)')
-    .eq('active', true)
-    .eq('prices.active', true)
-    .order('metadata->index')
-    .order('unit_amount', { referencedTable: 'prices' });
-
+  const { data: { user } } = await supabase.auth.getUser();
   return (
-    <Pricing
-      user={user}
-      products={products ?? []}
-      subscription={subscription}
-    />
-  );
+    <div>
+      <TestComp user = {user}/>
+    </div>
+
+  )
 }

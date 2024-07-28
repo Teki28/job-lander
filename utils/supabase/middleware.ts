@@ -3,12 +3,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 
 export const createClient = (request: NextRequest) => {
   // Create an unmodified response
-  const requestHeaders = new Headers(request.headers)
-
   // Add new request headers
-  requestHeaders.set('request-ip', request.ip?request.ip:'');
-  requestHeaders.set('request-url', request.url);
-  requestHeaders.set('request-geo', JSON.stringify(request.geo));
   let response = NextResponse.next({
     request: {
       headers: request.headers

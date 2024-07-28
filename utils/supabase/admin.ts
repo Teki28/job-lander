@@ -40,7 +40,7 @@ const upsertPriceRecord = async (
   retryCount = 0,
   maxRetries = 3
 ) => {
-  const priceData: Price = {
+  const priceData: any = {
     id: price.id,
     product_id: typeof price.product === 'string' ? price.product : '',
     active: price.active,

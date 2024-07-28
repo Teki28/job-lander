@@ -4,6 +4,10 @@ import Navbar from '@/components/ui/Navbar';
 import { Toaster } from '@/components/ui/Toasts/toaster';
 import { PropsWithChildren, Suspense } from 'react';
 import { getURL } from '@/utils/helpers';
+import { ThemeProvider } from './context/ThemeContext';
+import ClientThemeWrapper from './context/ClientThemeWrapper';
+import Sidebar from '@/components/ui/Sidebar/Sidebar';
+import { createClient } from '@/utils/supabase/server';
 import 'styles/main.css';
 
 const meta = {
@@ -47,20 +51,26 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: PropsWithChildren) {
+  const supabase = createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
   return (
     <html lang="en">
       <body className="bg-black">
-        <Navbar />
-        <main
-          id="skip"
-          className="min-h-[calc(100dvh-4rem)] md:min-h[calc(100dvh-5rem)]"
-        >
-          {children}
-        </main>
-        <Footer />
-        <Suspense>
-          <Toaster />
-        </Suspense>
+        <ThemeProvider>
+          <ClientThemeWrapper> 
+            <Sidebar user = {user} />
+            {/* <Navbar /> */}
+            <main
+              id="skip"
+            >
+              {children}
+            </main>
+            <Suspense>
+              <Toaster />
+            </Suspense>
+          </ClientThemeWrapper>
+        </ThemeProvider>
       </body>
     </html>
   );
