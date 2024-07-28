@@ -89,7 +89,7 @@ const JobCard = () => {
       store.resLoadingStore.toggleResLoadingStatus();
       let prompt = "You are professionol HR to help students writing their job hunting resume. This student want to get a job as " + "software developer" + " , he is asked to provide an answer to question: " + question + ". Please help him write an answer. And answer should base on following experience: " + "He once joined a event which has goal to " + goal + " But, it was difficult because " + difficulty + " But he didn't give up, instead he " + action + " Finally, "+ result;
       // here, call next api using prompt as payload
-      const res = await fetch("http://localhost:3000/api/ai", {
+      const res = await fetch(process.env.NEXT_PUBLIC_SITE_URL + "/api/ai", {
         method: "POST",
         body: JSON.stringify({ prompt: prompt }),
         // ...
