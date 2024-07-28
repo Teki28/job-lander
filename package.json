@@ -24,6 +24,7 @@
     "supabase:pull": "npx supabase pull"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.16.0",
     "@langchain/google-genai": "^0.0.17",
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/react-toast": "^1.1.5",
