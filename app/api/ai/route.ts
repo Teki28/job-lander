@@ -1,5 +1,3 @@
-import { NextRequest } from "next/server";
-import { headers } from "next/headers";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
 import { createClient } from "@/utils/supabase/server";
@@ -25,7 +23,7 @@ const model = new ChatGoogleGenerativeAI({
 // limit: number of access for current user 
 // window: time window to refresh access numbers
 const limitRate = (ip: string, limit: number, window: number) => {
-  
+  console.log("ip: " + ip)
   if (!rateLimitMap.has(ip)) {
       rateLimitMap.set(ip, {
           count: 0,

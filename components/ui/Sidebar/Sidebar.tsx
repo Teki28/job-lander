@@ -3,9 +3,28 @@ import { useEffect, useState } from "react";
 import { useContext } from "react";
 import { ThemeContext } from "@/app/context/ThemeContext";
 import Link from "next/link";
+import { SignOut } from '@/utils/auth-helpers/server';
+import { handleRequest } from '@/utils/auth-helpers/client';
+import { usePathname, useRouter } from 'next/navigation';
+import { getRedirectMethod } from '@/utils/auth-helpers/settings';
+import { selectUserById } from "@/utils/supabase/action";
 
 const Sidebar = ({user}: any) => {
-
+  const [info, setInfo] = useState(false);
+  const showInfo = async () => {
+    setInfo(true);
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    setInfo(false);
+  }
+  const [username, setUsername] = useState("");
+  useEffect(()=>{
+    selectUserById(user ? user.id : "").then(data => {
+      if(data.code === 1 && typeof data.data !== "string") {
+        setUsername(data.data.full_name);
+      }
+    })
+  })
+  const router = getRedirectMethod() === 'client' ? useRouter() : null;
   const {theme} = useContext(ThemeContext);
   const [showSub, setShowSub] = useState(false);
   useEffect(()=> {
@@ -17,6 +36,20 @@ const Sidebar = ({user}: any) => {
 
   return (
 <div className= "drawer z-10">
+<div role="alert" className={`${info ? "block" : "hidden"} alert alert-success z-20 w-60 flex`}>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-6 w-6 shrink-0 stroke-current"
+    fill="none"
+    viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+  <span>We are totally FREE!</span>
+</div>
   <input id="my-drawer" type="checkbox" className="drawer-toggle" />
   <div className="fixed p-1 drawer-content">
     {/* Page content here */}
@@ -34,7 +67,7 @@ className={`${theme === 'dark' ? 'bg-primary' : 'bg-white'} max-w-[20rem] flex-c
 <div className="items-center gap-4 p-4 mb-2">
   <img src="https://docs.material-tailwind.com/img/logo-ct-dark.png" alt="brand" className="w-8 h-8" />
   <h5 className="block font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-blue-gray-900">
-    Hi {user ? user.id: ""}
+    Hi {user ? username: "unknown"}
   </h5>
 </div>
 <nav className="flex min-w-[240px] flex-col gap-1 p-2 font-sans text-base font-normal text-blue-gray-700">
@@ -125,7 +158,7 @@ className={`${theme === 'dark' ? 'bg-primary' : 'bg-white'} max-w-[20rem] flex-c
   </Link>
   <hr className="my-2 border-blue-gray-50" />
 
-  <div role="button"
+  <Link href="/account" role="button"
     className="flex items-center w-full p-3 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 hover:bg-gray-100">
     <div className="grid mr-4 place-items-center">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
@@ -136,8 +169,9 @@ className={`${theme === 'dark' ? 'bg-primary' : 'bg-white'} max-w-[20rem] flex-c
       </svg>
     </div>
     Profile
-  </div>
-  <Link href="/subscribe" role="button"
+  </Link>
+  <div role="button"
+    onClick={()=>showInfo()}
     className="flex items-center w-full p-3 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 hover:bg-gray-100">
     <div className="grid mr-4 place-items-center">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
@@ -148,10 +182,10 @@ className={`${theme === 'dark' ? 'bg-primary' : 'bg-white'} max-w-[20rem] flex-c
           </svg>
     </div>
     Subscription
-  </Link>
+  </div>
   <div role="button"
-    className="flex items-center w-full p-3 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 hover:bg-gray-100">
-    <div className="grid mr-4 place-items-center">
+      className="flex items-center w-full p-3 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 hover:bg-gray-100">
+            <div className="grid mr-4 place-items-center">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
         className="w-5 h-5">
         <path fill-rule="evenodd"
@@ -159,7 +193,18 @@ className={`${theme === 'dark' ? 'bg-primary' : 'bg-white'} max-w-[20rem] flex-c
           clip-rule="evenodd"></path>
       </svg>
     </div>
-    Log Out
+  {user ? (
+          <form onSubmit={(e) => handleRequest(e, SignOut, router)}>
+            <input type="hidden" name="pathName" value={usePathname()} />
+            <button type="submit">
+              Sign out
+            </button>
+          </form>
+        ) : (
+          <Link href="/signin">
+            Sign In
+          </Link>
+        )}
   </div>
 </nav>
 <div role="alert"
@@ -176,8 +221,7 @@ className={`${theme === 'dark' ? 'bg-primary' : 'bg-white'} max-w-[20rem] flex-c
       Upgrade to PRO
     </h6>
     <p className="block font-sans text-sm antialiased font-normal leading-normal text-inherit opacity-80">
-      Upgrade to Material Tailwind PRO and get even more components,
-      plugins, advanced features and premium.
+      You want to upgrade? Thanks for your trust and support, however, we don't offer any premium subscription now. Just use that money to get you a big mac, good day!
     </p>
     <div className="flex gap-3 mt-4">
       <a href="#" onClick={()=>setShowSub(false)} className="block font-sans text-sm antialiased font-medium leading-normal text-inherit opacity-80">

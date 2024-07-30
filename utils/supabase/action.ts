@@ -3,6 +3,24 @@ import { createClient } from "./client";
 import { Story, Post, Response } from "@/types_db";
 import { createClient as createServerClient } from "./server";
 
+export const selectUserById = async (id: string) => {
+  const supabase = createClient();
+  let { data: user_name, error } = await supabase
+  .from('users')
+  .select("full_name")
+  .eq('id', id)
+  if(error){
+    return {
+      code: 0,
+      data: error.message
+    }
+  }
+  return {
+    code: 1,
+    data: user_name[0]
+  } 
+}
+
 export const selectStoryById = async (id: number) => {
   const supabase = createClient();
   let { data: story, error } = await supabase

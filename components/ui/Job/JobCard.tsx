@@ -176,7 +176,6 @@ const JobCard = () => {
           </ul>
         </div>
         <div className="font-bold">{store.storyStore.story?.name ? store.storyStore.story?.name : "New Story"}</div>
-
         <textarea placeholder="what do you want to achieve" className="textarea textarea-primary placeholder-grey-300 w-full" value={goal} onChange={e=>updateGoal(e.target.value)}/>
         <textarea placeholder="what's the biggest difficulty" className="textarea textarea-primary placeholder-grey-300 w-full" value={difficulty} onChange={e=>updateDifficulty(e.target.value)} />
         <textarea placeholder="what did you do to solve it" className="textarea textarea-primary placeholder-grey-300 w-full" value={action} onChange={e=>updateAction(e.target.value)}/>
